@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Voti interrogazioni · Liceo Galilei</title>
+<meta name="theme-color" content="#14213d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.jpg">
+<link rel="apple-touch-icon" href="icon.jpg">
+<style>
+:root{--avorio:#fbf7ee;--carta:#fffdf8;--blu:#14213d;--blu2:#2b3a67;--corallo:#e5604d;--corallo2:#fbe3de;--linea:#e6dfcf;--grigio:#6b6f7b;--verde:#2f8f5b;--giallo:#d99a1e;--rosso:#c0392b}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--avorio);color:var(--blu);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+header{background:var(--carta);border-bottom:3px solid var(--corallo);padding:10px 14px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
+header img{height:42px;width:auto}
+header h1{font-size:1.05rem;margin:0;line-height:1.15}
+header h1 small{display:block;font-weight:500;color:var(--grigio);font-size:.78rem}
+header .sp{flex:1}
+main{max-width:980px;margin:0 auto;padding:14px 12px 120px}
+.btn{border:1.5px solid var(--blu);background:var(--carta);color:var(--blu);border-radius:10px;padding:8px 12px;font:600 .9rem inherit;cursor:pointer}
+.btn.pri{background:var(--blu);color:#fff}
+.btn.cor{border-color:var(--corallo);color:var(--corallo)}
+.btn.sm{padding:5px 9px;font-size:.8rem}
+.box{background:var(--carta);border:1px solid var(--linea);border-radius:14px;padding:12px;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+label.f{display:flex;flex-direction:column;font-size:.75rem;font-weight:700;color:var(--grigio);gap:3px;flex:1;min-width:120px;text-transform:uppercase;letter-spacing:.03em}
+input,textarea,select{font:inherit;color:var(--blu);border:1.5px solid var(--linea);border-radius:9px;padding:8px 10px;background:#fff;width:100%}
+input:focus,textarea:focus{outline:none;border-color:var(--blu2)}
+textarea{resize:vertical;min-height:38px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.tab{flex:0 0 auto;border:1.5px solid var(--linea);background:var(--carta);border-radius:999px;padding:7px 12px;font:600 .85rem inherit;color:var(--blu);cursor:pointer;display:flex;gap:6px;align-items:center;max-width:220px}
+.tab span.n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tab b{background:var(--linea);border-radius:999px;padding:1px 7px;font-size:.78rem}
+.tab.on{border-color:var(--blu);background:var(--blu);color:#fff}
+.tab.on b{background:var(--corallo);color:#fff}
+.tab.add{border-style:dashed}
+.stud .nome{font-size:1.15rem;font-weight:700}
+.voce{border-top:1px solid var(--linea);padding:10px 0}
+.voce:first-of-type{border-top:0}
+.vt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.vt h3{margin:0;font-size:.95rem}
+.vt h3 em{font-style:normal;color:var(--corallo);margin-right:4px}
+.vt .desc{font-size:.8rem;color:var(--grigio);text-align:right;min-height:1em}
+.pts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pts button{border:1.5px solid var(--linea);background:#fff;border-radius:10px;padding:10px 0;font:700 1rem inherit;color:var(--blu);cursor:pointer;touch-action:manipulation}
+.pts button small{display:block;font-size:.62rem;font-weight:600;color:var(--grigio);margin-top:2px}
+.pts button.on{background:var(--blu);border-color:var(--blu);color:#fff}
+.pts button.on small{color:#dfe4f2}
+.pts button:disabled{opacity:.25;cursor:default}
+.arg{margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.chip{border:1px solid var(--linea);background:#fff;border-radius:999px;padding:4px 9px;font-size:.78rem;cursor:pointer;color:var(--blu)}
+.chip.on{background:var(--corallo2);border-color:var(--corallo);color:#8a2a1c}
+.votobar{position:fixed;left:0;right:0;bottom:0;background:var(--blu);color:#fff;padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;z-index:30;box-shadow:0 -4px 14px rgba(0,0,0,.15)}
+.votobar .who{flex:1;min-width:0}
+.votobar .who div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.votobar .who small{color:#c7cde0;font-size:.78rem}
+.voto{font-size:2rem;font-weight:800;min-width:76px;text-align:center;background:#fff;color:var(--blu);border-radius:12px;padding:2px 8px;line-height:1.2}
+.voto.ins{color:var(--rosso)}.voto.suf{color:var(--giallo)}.voto.buo{color:var(--verde)}
+.voto.vuoto{color:#aab}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{border-bottom:1px solid var(--linea);padding:7px 5px;text-align:center}
+th:first-child,td:first-child{text-align:left}
+th{font-size:.72rem;text-transform:uppercase;color:var(--grigio)}
+td.v{font-weight:800}
+.guida td,.guida th{text-align:left;vertical-align:top}
+details summary{cursor:pointer;font-weight:700}
+.muted{color:var(--grigio);font-size:.82rem}
+.hist li{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--linea)}
+.hist ul{list-style:none;margin:0;padding:0}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--corallo);color:#fff;padding:8px 14px;border-radius:10px;font-weight:600;opacity:0;transition:.25s;z-index:40;pointer-events:none}
+.toast.show{opacity:1}
+h2{font-size:1rem;margin:0 0 8px}
+@media (min-width:760px){.pts button{padding:12px 0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
+@media print{header,.votobar,.noprint,.tabs,#vStud{display:none!important}body{background:#fff}.box{border:0}main{padding:0}#vRegistro{display:block!important}}
+</style>
+</head>
+<body>
+<header>
+  <img src="logo-galilei.jpg" alt="Liceo Statale Galileo Galilei Verona">
+  <h1>Voti interrogazioni<small id="hSub">Scienze motorie e sportive</small></h1>
+  <div class="sp"></div>
+  <button class="btn sm" id="bReg">Registro</button>
+</header>
+
+<main>
+  <!-- Dati interrogazione -->
+  <section class="box noprint" id="vDati">
+    <div class="row">
+      <label class="f">Classe<input id="iClasse" placeholder="es. 2D" autocomplete="off"></label>
+      <label class="f">Data<input id="iData" type="date"></label>
+    </div>
+    <label class="f" style="margin-top:8px">Argomenti<input id="iArg" autocomplete="off"></label>
+  </section>
+
+  <!-- Scheda studente -->
+  <div id="vStud">
+    <div class="tabs noprint" id="tabs"></div>
+    <section class="box stud" id="card"></section>
+  </div>
+
+  <!-- Registro -->
+  <section class="box" id="vRegistro" style="display:none">
+    <div class="row noprint" style="justify-content:space-between;margin-bottom:8px">
+      <h2 style="margin:0">Registro</h2>
+      <button class="btn sm" id="bBack">← Torna agli studenti</button>
+    </div>
+    <p class="muted" id="regInfo"></p>
+    <div style="overflow-x:auto"><table id="tReg"></table></div>
+    <div class="row noprint" style="margin-top:12px">
+      <button class="btn pri" id="bCopia">Copia per il registro</button>
+      <button class="btn" id="bCsv">Scarica CSV (Excel)</button>
+      <button class="btn" id="bStampa">Stampa / PDF</button>
+    </div>
+    <div class="noprint" style="margin-top:16px">
+      <h2>Interrogazioni salvate su questo dispositivo</h2>
+      <div class="row" style="margin-bottom:8px">
+        <button class="btn cor" id="bArchivia">Salva e inizia una nuova interrogazione</button>
+      </div>
+      <div class="hist"><ul id="hist"></ul></div>
+      <p class="muted">I dati restano solo in questo browser (memoria locale): nessun dato viene inviato a server esterni. Su un altro dispositivo la memoria è separata.</p>
+    </div>
+  </section>
+
+  <!-- Guida -->
+  <details class="box noprint" id="guida">
+    <summary>Griglia di valutazione (come si arriva al voto)</summary>
+    <table class="guida" style="margin-top:8px">
+      <tr><th>Voce</th><th>0,5</th><th>1</th><th>1,5</th><th>2</th></tr>
+      <tr><td><b>A–B–C</b> Domande<br><span class="muted">0 = non risponde</span></td><td>Frammentaria o con errori gravi</td><td>Essenziale, qualche imprecisione</td><td>Completa e corretta</td><td>Completa, precisa, con esempi</td></tr>
+      <tr><td><b>D</b> Linguaggio</td><td>Generico o scorretto</td><td>Semplice ma corretto</td><td>Appropriato</td><td>Preciso e sicuro</td></tr>
+      <tr><td><b>E</b> Collegamenti</td><td>Ripete a memoria</td><td>Collega se guidato</td><td>Collega da solo, in modo semplice</td><td>Collega e applica allo sport</td></tr>
+    </table>
+    <p class="muted">Voto = somma dei punti (massimo 10). Sotto i 2 punti il voto è 2.</p>
+  </details>
+</main>
+
+<div class="votobar noprint" id="vbar">
+  <div class="who"><div id="bNome">—</div><small id="bInfo">Tocca i punteggi</small></div>
+  <div class="voto vuoto" id="bVoto">–</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+var KEY="voti-interrogazioni-v1";
+var VOCI=[
+  {k:"A",t:"Domanda 1",s:"a scelta",arg:true,zero:true,d:["Non risponde","Frammentaria o con errori gravi","Essenziale, qualche imprecisione","Completa e corretta","Completa, precisa, con esempi"]},
+  {k:"B",t:"Domanda 2",s:"del docente",arg:true,zero:true,d:["Non risponde","Frammentaria o con errori gravi","Essenziale, qualche imprecisione","Completa e corretta","Completa, precisa, con esempi"]},
+  {k:"C",t:"Domanda 3",s:"del docente",arg:true,zero:true,d:["Non risponde","Frammentaria o con errori gravi","Essenziale, qualche imprecisione","Completa e corretta","Completa, precisa, con esempi"]},
+  {k:"D",t:"Linguaggio specifico",s:"",arg:false,zero:false,d:["","Generico o scorretto","Semplice ma corretto","Appropriato","Preciso e sicuro"]},
+  {k:"E",t:"Ragionamento e collegamenti",s:"",arg:false,zero:false,d:["","Ripete a memoria, non collega","Collega se guidato","Collega da solo, in modo semplice","Collega e applica allo sport"]}
+];
+var PUNTI=[0,0.5,1,1.5,2];
+var DOMANDE=[
+  "Piccola e grande circolazione","Il cuore: struttura e ciclo cardiaco","Gittata cardiaca e sforzo","Adattamenti del cuore all'allenamento","Pressione massima e minima","Vasi sanguigni e sangue",
+  "Percorso dell'aria","Inspirazione ed espirazione","Scambi gassosi negli alveoli","Fumo e prestazione","Volumi polmonari",
+  "ATP moneta energetica","Meccanismo anaerobico alattacido","Meccanismo anaerobico lattacido","Meccanismo aerobico","Meccanismi nei diversi sport"
+];
+var FORZA=["Contenuti sicuri","Linguaggio preciso","Buoni collegamenti","Esempi sportivi","Esposizione chiara"];
+var MIGL=["Studiare con più costanza","Usare i termini specifici","Collegare gli argomenti","Approfondire i metabolismi","Esporre con ordine"];
+
+function nuovoStud(){return {nome:"",arg:{A:"",B:"",C:""},p:{},forza:"",migl:""};}
+function nuovaSessione(){
+  var s=[];for(var i=0;i<5;i++)s.push(nuovoStud());
+  return {classe:"",data:oggi(),argomenti:"Apparato cardiocircolatorio, apparato respiratorio, metabolismi energetici",studenti:s,cur:0};
+}
+function oggi(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+
+var st=load();
+function load(){
+  try{var x=JSON.parse(localStorage.getItem(KEY));if(x&&x.sess&&x.sess.studenti)return x;}catch(e){}
+  return {sess:nuovaSessione(),archivio:[]};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function fmt(n){return String(n).replace(".",",");}
+
+function calc(s){
+  var tot=0,n=0;VOCI.forEach(function(v){if(typeof s.p[v.k]==="number"){tot+=s.p[v.k];n++;}});
+  if(n===0)return {voto:null,tot:0,n:0};
+  return {voto:Math.max(2,tot),tot:tot,n:n,completo:n===VOCI.length};
+}
+function cls(v){return v==null?"vuoto":v<6?"ins":v<7?"suf":"buo";}
+function nomeS(s,i){return s.nome.trim()||("Studente "+(i+1));}
+
+/* --- dati sessione --- */
+function bindDati(){
+  $("iClasse").value=st.sess.classe;$("iData").value=st.sess.data;$("iArg").value=st.sess.argomenti;
+  $("iClasse").oninput=function(){st.sess.classe=this.value.toUpperCase();this.value=st.sess.classe;save();sub();};
+  $("iData").oninput=function(){st.sess.data=this.value;save();sub();};
+  $("iArg").oninput=function(){st.sess.argomenti=this.value;save();};
+  sub();
+}
+function sub(){var c=st.sess.classe;$("hSub").textContent=(c?"Classe "+c+" · ":"")+dataIt(st.sess.data);}
+function dataIt(d){if(!d)return"";var p=d.split("-");return p[2]+"/"+p[1]+"/"+p[0];}
+
+/* --- tab studenti --- */
+function renderTabs(){
+  var h="";st.sess.studenti.forEach(function(s,i){
+    var c=calc(s);h+='<button class="tab'+(i===st.sess.cur?" on":"")+'" data-i="'+i+'"><span class="n">'+esc(nomeS(s,i))+'</span><b>'+(c.voto==null?"–":fmt(c.voto))+(c.voto!=null&&!c.completo?"…":"")+'</b></button>';
+  });
+  h+='<button class="tab add" id="tAdd">+ Studente</button>';
+  $("tabs").innerHTML=h;
+  [].forEach.call($("tabs").querySelectorAll(".tab[data-i]"),function(b){b.onclick=function(){st.sess.cur=+b.dataset.i;save();render();window.scrollTo({top:0,behavior:"smooth"});};});
+  $("tAdd").onclick=function(){st.sess.studenti.push(nuovoStud());st.sess.cur=st.sess.studenti.length-1;save();render();setTimeout(function(){$("sNome").focus();},50);};
+  var on=$("tabs").querySelector(".tab.on");if(on&&on.scrollIntoView)on.scrollIntoView({block:"nearest",inline:"center"});
+}
+
+/* --- scheda studente --- */
+function renderCard(){
+  var i=st.sess.cur,s=st.sess.studenti[i];
+  var h='<label class="f">Nome e cognome dello studente<input class="nome" id="sNome" value="'+esc(s.nome)+'" placeholder="Scrivi il nome" autocomplete="off" list="dlNomi"></label>';
+  h+='<datalist id="dlNomi">'+nomiNoti().map(function(n){return '<option value="'+esc(n)+'">';}).join("")+'</datalist>';
+  h+='<datalist id="dlDom">'+DOMANDE.map(function(n){return '<option value="'+esc(n)+'">';}).join("")+'</datalist>';
+  VOCI.forEach(function(v){
+    var val=s.p[v.k];var di=typeof val==="number"?PUNTI.indexOf(val):-1;
+    h+='<div class="voce"><div class="vt"><h3><em>'+v.k+'.</em>'+v.t+(v.s?' <span class="muted">('+v.s+')</span>':'')+'</h3><span class="desc" id="d'+v.k+'">'+(di>=0?esc(v.d[di]):"")+'</span></div>';
+    if(v.arg)h+='<input class="arg" data-k="'+v.k+'" value="'+esc(s.arg[v.k])+'" placeholder="Argomento della domanda (facoltativo)" list="dlDom" autocomplete="off">';
+    h+='<div class="pts">';
+    PUNTI.forEach(function(p,j){
+      var dis=!v.zero&&j===0;
+      h+='<button data-k="'+v.k+'" data-p="'+p+'"'+(val===p?' class="on"':'')+(dis?' disabled':'')+' title="'+esc(v.d[j])+'">'+fmt(p)+(v.d[j]?'<small>'+esc(corto(v.d[j]))+'</small>':'')+'</button>';
+    });
+    h+='</div></div>';
+  });
+  h+='<div class="voce grid2"><div><label class="f">Punto di forza<textarea id="sForza" rows="1">'+esc(s.forza)+'</textarea></label><div class="chips" data-t="forza">'+FORZA.map(function(c){return '<button class="chip">'+esc(c)+'</button>';}).join("")+'</div></div>';
+  h+='<div><label class="f">Da migliorare<textarea id="sMigl" rows="1">'+esc(s.migl)+'</textarea></label><div class="chips" data-t="migl">'+MIGL.map(function(c){return '<button class="chip">'+esc(c)+'</button>';}).join("")+'</div></div></div>';
+  h+='<div class="row noprint" style="justify-content:space-between;margin-top:8px"><button class="btn sm" id="sAzzera">Azzera punteggi</button><button class="btn sm cor" id="sElimina">Elimina studente</button><button class="btn pri" id="sNext">'+(i<st.sess.studenti.length-1?"Prossimo studente →":"Vai al registro →")+'</button></div>';
+  $("card").innerHTML=h;
+
+  $("sNome").oninput=function(){s.nome=this.value;save();renderTabs();bar();};
+  [].forEach.call($("card").querySelectorAll("input.arg"),function(inp){inp.oninput=function(){s.arg[inp.dataset.k]=inp.value;save();};});
+  [].forEach.call($("card").querySelectorAll(".pts button"),function(b){b.onclick=function(){
+    var k=b.dataset.k,p=+b.dataset.p;
+    if(s.p[k]===p)delete s.p[k];else s.p[k]=p;
+    save();
+    [].forEach.call($("card").querySelectorAll('.pts button[data-k="'+k+'"]'),function(x){x.classList.toggle("on",s.p[k]===+x.dataset.p);});
+    var v=VOCI.filter(function(z){return z.k===k;})[0];$("d"+k).textContent=typeof s.p[k]==="number"?v.d[PUNTI.indexOf(s.p[k])]:"";
+    renderTabs();bar();
+  };});
+  $("sForza").oninput=function(){s.forza=this.value;save();};
+  $("sMigl").oninput=function(){s.migl=this.value;save();};
+  [].forEach.call($("card").querySelectorAll(".chips"),function(box){
+    var campo=box.dataset.t,ta=campo==="forza"?$("sForza"):$("sMigl");
+    [].forEach.call(box.querySelectorAll(".chip"),function(c){
+      if(s[campo].indexOf(c.textContent)>=0)c.classList.add("on");
+      c.onclick=function(){
+        var t=c.textContent,cur=s[campo];
+        if(cur.indexOf(t)>=0){cur=cur.split(/;\s*/).filter(function(x){return x&&x!==t;}).join("; ");c.classList.remove("on");}
+        else{cur=cur.trim()?cur.trim().replace(/;$/,"")+"; "+t:t;c.classList.add("on");}
+        s[campo]=cur;ta.value=cur;save();
+      };
+    });
+  });
+  $("sAzzera").onclick=function(){if(confirm("Azzerare i punteggi di "+nomeS(s,i)+"?")){s.p={};save();render();}};
+  $("sElimina").onclick=function(){
+    if(!confirm("Eliminare "+nomeS(s,i)+" da questa interrogazione?"))return;
+    st.sess.studenti.splice(i,1);if(!st.sess.studenti.length)st.sess.studenti.push(nuovoStud());
+    st.sess.cur=Math.min(i,st.sess.studenti.length-1);save();render();
+  };
+  $("sNext").onclick=function(){
+    if(i<st.sess.studenti.length-1){st.sess.cur=i+1;save();render();window.scrollTo({top:0,behavior:"smooth"});}
+    else mostraRegistro(true);
+  };
+}
+function corto(t){var m={"Non risponde":"non risp.","Frammentaria o con errori gravi":"frammentaria","Essenziale, qualche imprecisione":"essenziale","Completa e corretta":"completa","Completa, precisa, con esempi":"approfondita","Generico o scorretto":"generico","Semplice ma corretto":"semplice","Appropriato":"appropriato","Preciso e sicuro":"preciso","Ripete a memoria, non collega":"a memoria","Collega se guidato":"se guidato","Collega da solo, in modo semplice":"da solo","Collega e applica allo sport":"applica"};return m[t]||t;}
+function nomiNoti(){
+  var set={};st.archivio.forEach(function(a){if(a.classe===st.sess.classe)a.studenti.forEach(function(s){if(s.nome.trim())set[s.nome.trim()]=1;});});
+  return Object.keys(set).sort();
+}
+
+function bar(){
+  var i=st.sess.cur,s=st.sess.studenti[i],c=calc(s);
+  $("bNome").textContent=nomeS(s,i);
+  $("bInfo").textContent=c.n===0?"Tocca i punteggi":(c.completo?"Punti: "+fmt(c.tot)+"/10"+(c.tot<2?" → voto minimo 2":""):"Voci compilate "+c.n+"/5 · parziale "+fmt(c.tot));
+  var e=$("bVoto");e.textContent=c.voto==null?"–":fmt(c.voto);e.className="voto "+cls(c.voto);
+}
+
+/* --- registro --- */
+function righe(sess){
+  return sess.studenti.filter(function(s){return s.nome.trim()||Object.keys(s.p).length;}).map(function(s,i){
+    var c=calc(s);return {nome:nomeS(s,i),s:s,c:c};
+  });
+}
+function mostraRegistro(on){
+  $("vStud").style.display=on?"none":"";$("vDati").style.display=on?"none":"";$("vbar").style.display=on?"none":"";
+  $("vRegistro").style.display=on?"block":"none";$("bReg").textContent=on?"Studenti":"Registro";
+  if(on){renderRegistro();window.scrollTo(0,0);}
+}
+function renderRegistro(){
+  var r=righe(st.sess);
+  $("regInfo").textContent=(st.sess.classe?"Classe "+st.sess.classe+" · ":"")+dataIt(st.sess.data)+" · "+st.sess.argomenti;
+  var h='<tr><th>Studente</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>Voto</th></tr>';
+  if(!r.length)h+='<tr><td colspan="7" class="muted">Nessuno studente compilato.</td></tr>';
+  r.forEach(function(x){
+    h+='<tr><td>'+esc(x.nome)+(x.s.forza||x.s.migl?'<div class="muted">'+(x.s.forza?"+ "+esc(x.s.forza):"")+(x.s.forza&&x.s.migl?" · ":"")+(x.s.migl?"→ "+esc(x.s.migl):"")+'</div>':'')+'</td>';
+    VOCI.forEach(function(v){h+='<td>'+(typeof x.s.p[v.k]==="number"?fmt(x.s.p[v.k]):"–")+'</td>';});
+    h+='<td class="v"><span class="voto '+cls(x.c.voto)+'" style="font-size:1rem;min-width:0;padding:2px 8px;border:1px solid var(--linea)">'+(x.c.voto==null?"–":fmt(x.c.voto))+(x.c.voto!=null&&!x.c.completo?"*":"")+'</span></td></tr>';
+  });
+  $("tReg").innerHTML=h;
+  var hh="";st.archivio.slice().reverse().forEach(function(a,ri){
+    var idx=st.archivio.length-1-ri,n=righe(a).length;
+    hh+='<li><span><b>'+esc(a.classe||"Senza classe")+'</b> · '+dataIt(a.data)+' · '+n+' stud.</span><span><button class="btn sm" data-apri="'+idx+'">Apri</button> <button class="btn sm cor" data-del="'+idx+'">✕</button></span></li>';
+  });
+  $("hist").innerHTML=hh||'<li class="muted">Nessuna interrogazione salvata.</li>';
+  [].forEach.call($("hist").querySelectorAll("[data-apri]"),function(b){b.onclick=function(){
+    var idx=+b.dataset.apri;var a=st.archivio.splice(idx,1)[0];
+    if(righe(st.sess).length)st.archivio.push(st.sess);
+    a.cur=0;st.sess=a;save();bindDati();render();mostraRegistro(false);toast("Interrogazione riaperta");
+  };});
+  [].forEach.call($("hist").querySelectorAll("[data-del]"),function(b){b.onclick=function(){
+    if(confirm("Eliminare definitivamente questa interrogazione salvata?")){st.archivio.splice(+b.dataset.del,1);save();renderRegistro();}
+  };});
+}
+function testoRegistro(sep){
+  var r=righe(st.sess),out=[["Studente","A","B","C","D","E","Voto","Punto di forza","Da migliorare","Argomenti domande"].join(sep)];
+  r.forEach(function(x){
+    var cells=[x.nome];VOCI.forEach(function(v){cells.push(typeof x.s.p[v.k]==="number"?fmt(x.s.p[v.k]):"");});
+    cells.push(x.c.voto==null?"":fmt(x.c.voto),x.s.forza,x.s.migl,[x.s.arg.A,x.s.arg.B,x.s.arg.C].filter(Boolean).join(" | "));
+    if(sep===";")cells=cells.map(function(c){return /[;"\n]/.test(c)?'"'+String(c).replace(/"/g,'""')+'"':c;});
+    out.push(cells.join(sep));
+  });
+  return out.join("\n");
+}
+$("bCopia").onclick=function(){
+  var t=testoRegistro("\t");
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){toast("Copiato: incollalo in Excel o nel registro");},function(){fallbackCopy(t);});
+  else fallbackCopy(t);
+};
+function fallbackCopy(t){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Copiato");}catch(e){}document.body.removeChild(ta);}
+$("bCsv").onclick=function(){
+  var blob=new Blob(["﻿"+testoRegistro(";")],{type:"text/csv;charset=utf-8"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="voti_"+(st.sess.classe||"classe")+"_"+st.sess.data+".csv";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
+};
+$("bStampa").onclick=function(){window.print();};
+$("bArchivia").onclick=function(){
+  if(!righe(st.sess).length){toast("Non c'è nulla da salvare");return;}
+  if(!confirm("Salvare questa interrogazione e iniziarne una nuova?"))return;
+  var cl=st.sess.classe,arg=st.sess.argomenti;
+  st.archivio.push(st.sess);st.sess=nuovaSessione();st.sess.classe=cl;st.sess.argomenti=arg;save();
+  bindDati();render();mostraRegistro(false);toast("Salvata. Nuova interrogazione pronta");
+};
+$("bReg").onclick=function(){mostraRegistro($("vRegistro").style.display==="none");};
+$("bBack").onclick=function(){mostraRegistro(false);};
+
+function toast(t){var e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(function(){e.classList.remove("show");},2200);}
+function render(){if(st.sess.cur>=st.sess.studenti.length)st.sess.cur=0;renderTabs();renderCard();bar();}
+
+bindDati();render();
+if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});
+})();
+</script>
+</body>
+</html>
