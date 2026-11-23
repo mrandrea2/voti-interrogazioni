@@ -72,6 +72,15 @@ details summary{cursor:pointer;font-weight:700}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--corallo);color:#fff;padding:8px 14px;border-radius:10px;font-weight:600;opacity:0;transition:.25s;z-index:40;pointer-events:none}
 .toast.show{opacity:1}
 h2{font-size:1rem;margin:0 0 8px}
+.roster{margin-top:10px;border-top:1px solid var(--linea);padding-top:10px}
+.roster .chip{font-size:.85rem;padding:6px 10px}
+.chip.cur{background:var(--blu);border-color:var(--blu);color:#fff}
+.chip.fatto{background:#eef0f4;color:var(--grigio)}
+.chip .vv{font-weight:800;margin-left:4px}
+.legenda{display:flex;gap:10px;flex-wrap:wrap;font-size:.75rem;color:var(--grigio);margin:6px 0}
+.legenda i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;border:1px solid var(--linea)}
+.classi li{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--linea)}
+.classi ul{list-style:none;margin:0;padding:0}
 @media (min-width:760px){.pts button{padding:12px 0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
 @media print{header,.votobar,.noprint,.tabs,#vStud{display:none!important}body{background:#fff}.box{border:0}main{padding:0}#vRegistro{display:block!important}}
 </style>
@@ -88,10 +97,16 @@ h2{font-size:1rem;margin:0 0 8px}
   <!-- Dati interrogazione -->
   <section class="box noprint" id="vDati">
     <div class="row">
-      <label class="f">Classe<input id="iClasse" placeholder="es. 2D" autocomplete="off"></label>
+      <label class="f">Classe<input id="iClasse" placeholder="es. 2D" autocomplete="off" list="dlClassi"></label>
+      <datalist id="dlClassi"></datalist>
       <label class="f">Data<input id="iData" type="date"></label>
     </div>
     <label class="f" style="margin-top:8px">Argomenti<input id="iArg" autocomplete="off"></label>
+    <div class="row" style="margin-top:10px">
+      <button class="btn pri" id="bScegli">Scegli gli interrogati</button>
+      <button class="btn" id="bEstrai">Estrai a caso</button>
+    </div>
+    <div class="roster" id="roster" style="display:none"></div>
   </section>
 
   <!-- Scheda studente -->
@@ -120,6 +135,18 @@ h2{font-size:1rem;margin:0 0 8px}
       </div>
       <div class="hist"><ul id="hist"></ul></div>
       <p class="muted">I dati restano solo in questo browser (memoria locale): nessun dato viene inviato a server esterni. Su un altro dispositivo la memoria è separata.</p>
+      <h2 style="margin-top:16px">Elenchi delle classi</h2>
+      <div class="classi"><ul id="lClassi"></ul></div>
+      <div class="row" style="margin-top:8px">
+        <label class="btn" style="display:inline-flex;align-items:center;gap:6px">Importa da Excel<input type="file" id="fExcel" accept=".xlsx,.xls,.csv" multiple style="display:none"></label>
+        <button class="btn" id="bIncolla">Incolla un elenco</button>
+      </div>
+      <div id="incolla" style="display:none;margin-top:8px">
+        <label class="f">Classe<input id="pClasse" placeholder="es. 4D"></label>
+        <label class="f" style="margin-top:6px">Un nome per riga (puoi incollare da Excel le colonne Cognome e Nome)<textarea id="pNomi" rows="6"></textarea></label>
+        <button class="btn pri" id="bSalvaElenco" style="margin-top:6px">Salva elenco</button>
+      </div>
+      <p class="muted">Excel: basta il file con le colonne «Cognome» e «Nome»; la classe viene letta dal nome del foglio o del file (es. «3E»).</p>
     </div>
   </section>
 
@@ -171,8 +198,8 @@ function oggi(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+
 
 var st=load();
 function load(){
-  try{var x=JSON.parse(localStorage.getItem(KEY));if(x&&x.sess&&x.sess.studenti)return x;}catch(e){}
-  return {sess:nuovaSessione(),archivio:[]};
+  try{var x=JSON.parse(localStorage.getItem(KEY));if(x&&x.sess&&x.sess.studenti){x.classi=x.classi||{};return x;}}catch(e){}
+  return {sess:nuovaSessione(),archivio:[],classi:{}};
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
 
@@ -191,7 +218,7 @@ function nomeS(s,i){return s.nome.trim()||("Studente "+(i+1));}
 /* --- dati sessione --- */
 function bindDati(){
   $("iClasse").value=st.sess.classe;$("iData").value=st.sess.data;$("iArg").value=st.sess.argomenti;
-  $("iClasse").oninput=function(){st.sess.classe=this.value.toUpperCase();this.value=st.sess.classe;save();sub();};
+  $("iClasse").oninput=function(){st.sess.classe=this.value.toUpperCase().trim();this.value=st.sess.classe;save();sub();renderCard();if($("roster").style.display!=="none")renderRoster();};
   $("iData").oninput=function(){st.sess.data=this.value;save();sub();};
   $("iArg").oninput=function(){st.sess.argomenti=this.value;save();};
   sub();
@@ -233,7 +260,7 @@ function renderCard(){
   h+='<div class="row noprint" style="justify-content:space-between;margin-top:8px"><button class="btn sm" id="sAzzera">Azzera punteggi</button><button class="btn sm cor" id="sElimina">Elimina studente</button><button class="btn pri" id="sNext">'+(i<st.sess.studenti.length-1?"Prossimo studente →":"Vai al registro →")+'</button></div>';
   $("card").innerHTML=h;
 
-  $("sNome").oninput=function(){s.nome=this.value;save();renderTabs();bar();};
+  $("sNome").oninput=function(){s.nome=this.value;save();renderTabs();bar();if($("roster").style.display!=="none")renderRoster();};
   [].forEach.call($("card").querySelectorAll("input.arg"),function(inp){inp.oninput=function(){s.arg[inp.dataset.k]=inp.value;save();};});
   [].forEach.call($("card").querySelectorAll(".pts button"),function(b){b.onclick=function(){
     var k=b.dataset.k,p=+b.dataset.p;
@@ -270,7 +297,7 @@ function renderCard(){
 }
 function corto(t){var m={"Non risponde":"non risp.","Frammentaria o con errori gravi":"frammentaria","Essenziale, qualche imprecisione":"essenziale","Completa e corretta":"completa","Completa, precisa, con esempi":"approfondita","Generico o scorretto":"generico","Semplice ma corretto":"semplice","Appropriato":"appropriato","Preciso e sicuro":"preciso","Ripete a memoria, non collega":"a memoria","Collega se guidato":"se guidato","Collega da solo, in modo semplice":"da solo","Collega e applica allo sport":"applica"};return m[t]||t;}
 function nomiNoti(){
-  var set={};st.archivio.forEach(function(a){if(a.classe===st.sess.classe)a.studenti.forEach(function(s){if(s.nome.trim())set[s.nome.trim()]=1;});});
+  var set={};roster().forEach(function(n){set[n]=1;});st.archivio.forEach(function(a){if(a.classe===st.sess.classe)a.studenti.forEach(function(s){if(s.nome.trim())set[s.nome.trim()]=1;});});
   return Object.keys(set).sort();
 }
 
@@ -307,6 +334,7 @@ function renderRegistro(){
     var idx=st.archivio.length-1-ri,n=righe(a).length;
     hh+='<li><span><b>'+esc(a.classe||"Senza classe")+'</b> · '+dataIt(a.data)+' · '+n+' stud.</span><span><button class="btn sm" data-apri="'+idx+'">Apri</button> <button class="btn sm cor" data-del="'+idx+'">✕</button></span></li>';
   });
+  renderClassi();
   $("hist").innerHTML=hh||'<li class="muted">Nessuna interrogazione salvata.</li>';
   [].forEach.call($("hist").querySelectorAll("[data-apri]"),function(b){b.onclick=function(){
     var idx=+b.dataset.apri;var a=st.archivio.splice(idx,1)[0];
@@ -349,7 +377,123 @@ $("bReg").onclick=function(){mostraRegistro($("vRegistro").style.display==="none
 $("bBack").onclick=function(){mostraRegistro(false);};
 
 function toast(t){var e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(function(){e.classList.remove("show");},2200);}
-function render(){if(st.sess.cur>=st.sess.studenti.length)st.sess.cur=0;renderTabs();renderCard();bar();}
+function render(){if(st.sess.cur>=st.sess.studenti.length)st.sess.cur=0;renderTabs();renderCard();bar();renderClassiDL();if($("roster").style.display!=="none")renderRoster();}
+
+/* --- elenchi delle classi --- */
+function tc(t){return String(t).trim().replace(/\s+/g," ").toLowerCase().replace(/(^|[\s'\-])(\S)/g,function(m,a,b){return a+b.toUpperCase();});}
+function roster(){return st.classi[st.sess.classe]||[];}
+function norm(n){return String(n).trim().toLowerCase().replace(/\s+/g," ");}
+function inSessione(n){var k=norm(n);for(var i=0;i<st.sess.studenti.length;i++)if(norm(st.sess.studenti[i].nome)===k)return i;return -1;}
+function storico(){
+  var m={};st.archivio.forEach(function(a){if(a.classe!==st.sess.classe)return;a.studenti.forEach(function(s){if(!s.nome.trim())return;var c=calc(s);m[norm(s.nome)]=c.voto;});});
+  return m;
+}
+function renderClassiDL(){$("dlClassi").innerHTML=Object.keys(st.classi).sort().map(function(c){return '<option value="'+esc(c)+'">';}).join("");}
+function renderRoster(){
+  var r=roster(),box=$("roster");
+  if(!r.length){box.innerHTML='<p class="muted">'+(st.sess.classe?"Nessun elenco per la classe "+esc(st.sess.classe)+". ":"Scrivi o scegli la classe. ")+'Puoi importare gli elenchi da Excel nella pagina Registro.</p>'+(Object.keys(st.classi).length?'<div class="chips">'+Object.keys(st.classi).sort().map(function(c){return '<button class="chip" data-cl="'+esc(c)+'">'+esc(c)+'</button>';}).join("")+'</div>':'');
+    [].forEach.call(box.querySelectorAll("[data-cl]"),function(b){b.onclick=function(){st.sess.classe=b.dataset.cl;$("iClasse").value=st.sess.classe;save();sub();render();};});return;}
+  var h=storico();
+  var html='<div class="legenda"><span><i style="background:var(--blu)"></i>interrogato ora</span><span><i style="background:#eef0f4"></i>già interrogato (voto)</span><span><i style="background:#fff"></i>da interrogare</span></div><div class="chips">';
+  r.forEach(function(n){
+    var cur=inSessione(n)>=0,k=norm(n),fatto=Object.prototype.hasOwnProperty.call(h,k);
+    html+='<button class="chip'+(cur?" cur":fatto?" fatto":"")+'" data-n="'+esc(n)+'">'+esc(n)+(fatto&&h[k]!=null?'<span class="vv">'+fmt(h[k])+'</span>':'')+'</button>';
+  });
+  html+='</div><p class="muted">Tocca un nome per metterlo tra gli interrogati (o toglierlo, se non ha ancora punteggi).</p>';
+  box.innerHTML=html;
+  [].forEach.call(box.querySelectorAll("[data-n]"),function(b){b.onclick=function(){assegna(b.dataset.n);};});
+}
+function slotVuoto(){for(var i=0;i<st.sess.studenti.length;i++){var s=st.sess.studenti[i];if(!s.nome.trim()&&!Object.keys(s.p).length)return i;}return -1;}
+function assegna(n){
+  var i=inSessione(n);
+  if(i>=0){
+    var s=st.sess.studenti[i];
+    if(Object.keys(s.p).length){st.sess.cur=i;toast(n+" ha già dei punteggi");}
+    else{st.sess.studenti.splice(i,1);if(st.sess.studenti.length<5)st.sess.studenti.push(nuovoStud());st.sess.cur=Math.min(st.sess.cur,st.sess.studenti.length-1);}
+  }else{
+    var j=slotVuoto();if(j<0){st.sess.studenti.push(nuovoStud());j=st.sess.studenti.length-1;}
+    st.sess.studenti[j].nome=n;st.sess.cur=j;
+  }
+  save();render();
+}
+function estrai(){
+  var r=roster();if(!r.length){$("roster").style.display="block";renderRoster();toast("Prima importa l'elenco della classe");return;}
+  var h=storico(),lib=r.filter(function(n){return inSessione(n)<0&&!Object.prototype.hasOwnProperty.call(h,norm(n));});
+  if(!lib.length)lib=r.filter(function(n){return inSessione(n)<0;});
+  var quanti=0;st.sess.studenti.forEach(function(s){if(!s.nome.trim()&&!Object.keys(s.p).length)quanti++;});
+  if(!quanti)quanti=1;
+  var scelti=[];while(scelti.length<quanti&&lib.length){scelti.push(lib.splice(Math.floor(Math.random()*lib.length),1)[0]);}
+  if(!scelti.length){toast("Nessuno da estrarre");return;}
+  scelti.forEach(function(n){var j=slotVuoto();if(j<0){st.sess.studenti.push(nuovoStud());j=st.sess.studenti.length-1;}st.sess.studenti[j].nome=n;});
+  st.sess.cur=inSessione(scelti[0]);save();$("roster").style.display="block";render();toast("Estratti: "+scelti.join(", "));
+}
+$("bScegli").onclick=function(){var b=$("roster");var on=b.style.display==="none";b.style.display=on?"block":"none";if(on)renderRoster();};
+$("bEstrai").onclick=estrai;
+
+function salvaClasse(cl,nomi){
+  cl=String(cl||"").toUpperCase().trim();if(!cl||!nomi.length)return false;
+  var seen={},out=[];nomi.forEach(function(n){var t=tc(n);if(t&&!seen[norm(t)]){seen[norm(t)]=1;out.push(t);}});
+  st.classi[cl]=out;save();return out.length;
+}
+function classeDa(t){var m=String(t||"").toUpperCase().match(/(?:^|[^0-9A-Z])([1-5][A-Z]{1,2})(?=$|[^A-Z])/);return m?m[1]:"";}
+function righeInNomi(rows){
+  var hi=-1,cc=-1,cn=-1;
+  for(var i=0;i<Math.min(rows.length,15)&&hi<0;i++){var r=rows[i]||[];for(var j=0;j<r.length;j++){var v=String(r[j]==null?"":r[j]).trim().toLowerCase();if(v==="cognome")cc=j;if(v==="nome")cn=j;}if(cc>=0)hi=i;}
+  var nomi=[];
+  if(hi>=0){for(var k=hi+1;k<rows.length;k++){var r2=rows[k]||[];var c=String(r2[cc]==null?"":r2[cc]).trim(),n=cn>=0?String(r2[cn]==null?"":r2[cn]).trim():"";if(c)nomi.push(c+(n?" "+n:""));}}
+  else rows.forEach(function(r){var t=(r||[]).filter(function(x){return x!=null&&String(x).trim()&&isNaN(+x);}).join(" ");if(t)nomi.push(t);});
+  return nomi;
+}
+function caricaXLSX(cb){if(window.XLSX)return cb();var sc=document.createElement("script");sc.src="xlsx.mini.min.js";sc.onload=cb;sc.onerror=function(){toast("Impossibile leggere Excel offline");};document.head.appendChild(sc);}
+$("fExcel").onchange=function(){
+  var files=[].slice.call(this.files||[]);this.value="";if(!files.length)return;
+  caricaXLSX(function(){
+    var fatti=[];var n=files.length;
+    files.forEach(function(f){
+      var rd=new FileReader();
+      rd.onload=function(){
+        try{
+          var wb=XLSX.read(new Uint8Array(rd.result),{type:"array"});
+          var sh=wb.SheetNames[0],rows=XLSX.utils.sheet_to_json(wb.Sheets[sh],{header:1,blankrows:false});
+          var cl=classeDa(sh)||classeDa(f.name.replace(/\.[^.]+$/,""))||(prompt("Classe per il file "+f.name+"?")||"");
+          var k=salvaClasse(cl,righeInNomi(rows));if(k)fatti.push(cl.toUpperCase()+" ("+k+")");
+        }catch(e){toast("Errore nel file "+f.name);}
+        if(--n===0)fineImport(fatti);
+      };
+      rd.readAsArrayBuffer(f);
+    });
+  });
+};
+function fineImport(fatti){
+  if(!fatti.length){toast("Nessun elenco trovato");return;}
+  toast("Elenchi caricati: "+fatti.join(", "));
+  if(!st.sess.classe||!st.classi[st.sess.classe]){var c0=fatti[0].split(" ")[0];if(!righe(st.sess).length){st.sess.classe=c0;$("iClasse").value=c0;sub();}}
+  save();renderClassi();render();
+}
+$("bIncolla").onclick=function(){var d=$("incolla");d.style.display=d.style.display==="none"?"block":"none";};
+$("bSalvaElenco").onclick=function(){
+  var nomi=$("pNomi").value.split(/\n/).map(function(r){return r.split(/\t/).filter(function(x){return x.trim()&&isNaN(+x);}).join(" ");}).filter(Boolean);
+  var k=salvaClasse($("pClasse").value,nomi);
+  if(k){toast("Classe "+$("pClasse").value.toUpperCase()+": "+k+" studenti");$("pNomi").value="";$("incolla").style.display="none";renderClassi();render();}
+  else toast("Scrivi la classe e almeno un nome");
+};
+function renderClassi(){
+  var ks=Object.keys(st.classi).sort();
+  $("lClassi").innerHTML=ks.length?ks.map(function(c){return '<li><span><b>'+esc(c)+'</b> · '+st.classi[c].length+' studenti</span><button class="btn sm cor" data-delc="'+esc(c)+'">✕</button></li>';}).join(""):'<li class="muted">Nessun elenco caricato.</li>';
+  [].forEach.call($("lClassi").querySelectorAll("[data-delc]"),function(b){b.onclick=function(){if(confirm("Eliminare l'elenco della classe "+b.dataset.delc+"?")){delete st.classi[b.dataset.delc];save();renderClassi();render();}};});
+}
+/* import da link: #classi=<base64> (il frammento non arriva mai al server) */
+(function(){
+  var m=location.hash.match(/^#classi=(.+)$/);if(!m)return;
+  try{
+    var b=m[1].replace(/-/g,"+").replace(/_/g,"/");while(b.length%4)b+="=";
+    var bin=atob(b),bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+    var data=JSON.parse(new TextDecoder().decode(bytes)),fatti=[];
+    Object.keys(data).forEach(function(c){var k=salvaClasse(c,data[c]);if(k)fatti.push(c.toUpperCase()+" ("+k+")");});
+    if(fatti.length)setTimeout(function(){toast("Elenchi caricati: "+fatti.join(", "));},300);
+  }catch(e){}
+  try{history.replaceState(null,"",location.pathname+location.search);}catch(e){location.hash="";}
+})();
 
 bindDati();render();
 if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});
