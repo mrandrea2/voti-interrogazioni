@@ -18,7 +18,7 @@ header h1{font-size:1.05rem;margin:0;line-height:1.15}
 header h1 small{display:block;font-weight:500;color:var(--grigio);font-size:.78rem}
 header .sp{flex:1}
 main{max-width:980px;margin:0 auto;padding:14px 12px 120px}
-.btn{border:1.5px solid var(--blu);background:var(--carta);color:var(--blu);border-radius:10px;padding:8px 12px;font:600 .9rem inherit;cursor:pointer}
+.btn{border:1.5px solid var(--blu);background:var(--carta);color:var(--blu);border-radius:10px;padding:8px 12px;font-weight:600;font-size:.9rem;font-family:inherit;cursor:pointer}
 .btn.pri{background:var(--blu);color:#fff}
 .btn.cor{border-color:var(--corallo);color:var(--corallo)}
 .btn.sm{padding:5px 9px;font-size:.8rem}
@@ -29,7 +29,7 @@ input,textarea,select{font:inherit;color:var(--blu);border:1.5px solid var(--lin
 input:focus,textarea:focus{outline:none;border-color:var(--blu2)}
 textarea{resize:vertical;min-height:38px}
 .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
-.tab{flex:0 0 auto;border:1.5px solid var(--linea);background:var(--carta);border-radius:999px;padding:7px 12px;font:600 .85rem inherit;color:var(--blu);cursor:pointer;display:flex;gap:6px;align-items:center;max-width:220px}
+.tab{flex:0 0 auto;border:1.5px solid var(--linea);background:var(--carta);border-radius:999px;padding:7px 12px;font-weight:600;font-size:.85rem;font-family:inherit;color:var(--blu);cursor:pointer;display:flex;gap:6px;align-items:center;max-width:220px}
 .tab span.n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tab b{background:var(--linea);border-radius:999px;padding:1px 7px;font-size:.78rem}
 .tab.on{border-color:var(--blu);background:var(--blu);color:#fff}
@@ -43,7 +43,7 @@ textarea{resize:vertical;min-height:38px}
 .vt h3 em{font-style:normal;color:var(--corallo);margin-right:4px}
 .vt .desc{font-size:.8rem;color:var(--grigio);text-align:right;min-height:1em}
 .pts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.pts button{border:1.5px solid var(--linea);background:#fff;border-radius:10px;padding:10px 0;font:700 1rem inherit;color:var(--blu);cursor:pointer;touch-action:manipulation}
+.pts button{border:1.5px solid var(--linea);background:#fff;border-radius:10px;padding:10px 0;font-weight:800;font-size:1.25rem;font-family:inherit;color:var(--blu);cursor:pointer;touch-action:manipulation}
 .pts button small{display:block;font-size:.62rem;font-weight:600;color:var(--grigio);margin-top:2px}
 .pts button.on{background:var(--blu);border-color:var(--blu);color:#fff}
 .pts button.on small{color:#dfe4f2}
@@ -82,6 +82,39 @@ h2{font-size:1rem;margin:0 0 8px}
 .classi li{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--linea)}
 .classi ul{list-style:none;margin:0;padding:0}
 @media (min-width:760px){.pts button{padding:12px 0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
+/* --- leggibilità e LIM --- */
+html{font-size:17px}
+html.lim{font-size:23px}
+html.lim main{max-width:1500px}
+html.lim header img{height:56px}
+html.lim header h1{font-size:1.2rem}
+:root{--l0:#c0392b;--l1:#e8711a;--l2:#e9b400;--l3:#5aa832;--l4:#16803c}
+body{color:#0d1630}
+.vt h3{font-size:1.1rem}
+.vt .desc{font-size:.95rem;font-weight:700;color:var(--blu)}
+.pts button{border:2px solid #d5ccb8;border-top-width:6px;padding:12px 0 10px;min-height:64px}
+.pts button.l0{border-top-color:var(--l0)}.pts button.l1{border-top-color:var(--l1)}.pts button.l2{border-top-color:var(--l2)}.pts button.l3{border-top-color:var(--l3)}.pts button.l4{border-top-color:var(--l4)}
+.pts button small{font-size:.68rem;color:#4a4f5c}
+.pts button.on{color:#fff;transform:scale(1.04);box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.pts button.on small{color:#fff}
+.pts button.on.l0{background:var(--l0);border-color:var(--l0)}.pts button.on.l1{background:var(--l1);border-color:var(--l1)}.pts button.on.l2{background:var(--l2);border-color:var(--l2);color:#0d1630}.pts button.on.l2 small{color:#0d1630}.pts button.on.l3{background:var(--l3);border-color:var(--l3)}.pts button.on.l4{background:var(--l4);border-color:var(--l4)}
+.voce{border-radius:12px;padding:10px 8px;margin:0 -8px;transition:background .2s}
+.voce.next{background:#fff4d6;box-shadow:inset 4px 0 0 var(--corallo)}
+.voce.done .vt h3 em::after{content:" ✓";color:var(--l4)}
+.arg{font-size:.85rem;padding:6px 10px}
+.votobar{padding-top:12px}
+.votobar .who div{font-size:1.15rem}
+.votobar .who small{font-size:.85rem;color:#e3e7f3}
+.voto{font-size:2.4rem;min-width:96px;border:3px solid #fff}
+html.lim .voto{font-size:3.2rem;min-width:130px}
+.voto.parz{color:#8a90a0;background:#f2f3f6}.voto.ins{background:#fde6e3}.voto.suf{background:#fff3cf}.voto.buo{background:#dff3e5}
+.tab{font-size:.95rem;padding:9px 14px}
+#sNext.pronto{background:var(--corallo);border-color:var(--corallo);animation:pulsa 1.2s ease-in-out 2}
+@keyframes pulsa{50%{transform:scale(1.06)}}
+.tool{display:flex;gap:6px}
+header h1{min-width:0;flex:1}header h1,header h1 small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .sp{display:none}
+@media (max-width:480px){header{gap:8px;padding:8px 10px}header img{height:30px}header h1{font-size:.95rem}}
+@media (min-width:1100px){html.lim #card{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}html.lim #card>label.f{grid-column:1/-1}html.lim #card .voce{margin:0}html.lim #card .grid2,html.lim #card>.row{grid-column:1/-1}}
 @media print{header,.votobar,.noprint,.tabs,#vStud{display:none!important}body{background:#fff}.box{border:0}main{padding:0}#vRegistro{display:block!important}}
 </style>
 </head>
@@ -90,7 +123,7 @@ h2{font-size:1rem;margin:0 0 8px}
   <img src="logo-galilei.jpg" alt="Liceo Statale Galileo Galilei Verona">
   <h1>Voti interrogazioni<small id="hSub">Scienze motorie e sportive</small></h1>
   <div class="sp"></div>
-  <button class="btn sm" id="bReg">Registro</button>
+  <div class="tool"><button class="btn sm" id="bLim" title="Caratteri grandi per proiettare">LIM</button><button class="btn sm" id="bReg">Registro</button></div>
 </header>
 
 <main>
@@ -246,12 +279,12 @@ function renderCard(){
   h+='<datalist id="dlDom">'+DOMANDE.map(function(n){return '<option value="'+esc(n)+'">';}).join("")+'</datalist>';
   VOCI.forEach(function(v){
     var val=s.p[v.k];var di=typeof val==="number"?PUNTI.indexOf(val):-1;
-    h+='<div class="voce"><div class="vt"><h3><em>'+v.k+'.</em>'+v.t+(v.s?' <span class="muted">('+v.s+')</span>':'')+'</h3><span class="desc" id="d'+v.k+'">'+(di>=0?esc(v.d[di]):"")+'</span></div>';
+    h+='<div class="voce" data-v="'+v.k+'"><div class="vt"><h3><em>'+v.k+'.</em>'+v.t+(v.s?' <span class="muted">('+v.s+')</span>':'')+'</h3><span class="desc" id="d'+v.k+'">'+(di>=0?esc(v.d[di]):"")+'</span></div>';
     if(v.arg)h+='<input class="arg" data-k="'+v.k+'" value="'+esc(s.arg[v.k])+'" placeholder="Argomento della domanda (facoltativo)" list="dlDom" autocomplete="off">';
     h+='<div class="pts">';
     PUNTI.forEach(function(p,j){
       var dis=!v.zero&&j===0;
-      h+='<button data-k="'+v.k+'" data-p="'+p+'"'+(val===p?' class="on"':'')+(dis?' disabled':'')+' title="'+esc(v.d[j])+'">'+fmt(p)+(v.d[j]?'<small>'+esc(corto(v.d[j]))+'</small>':'')+'</button>';
+      h+='<button data-k="'+v.k+'" data-p="'+p+'" class="l'+j+(val===p?' on':'')+'"'+(dis?' disabled':'')+' title="'+esc(v.d[j])+'">'+fmt(p)+(v.d[j]?'<small>'+esc(corto(v.d[j]))+'</small>':'')+'</button>';
     });
     h+='</div></div>';
   });
@@ -268,7 +301,7 @@ function renderCard(){
     save();
     [].forEach.call($("card").querySelectorAll('.pts button[data-k="'+k+'"]'),function(x){x.classList.toggle("on",s.p[k]===+x.dataset.p);});
     var v=VOCI.filter(function(z){return z.k===k;})[0];$("d"+k).textContent=typeof s.p[k]==="number"?v.d[PUNTI.indexOf(s.p[k])]:"";
-    renderTabs();bar();
+    renderTabs();bar();guida(s,typeof s.p[k]==="number");
   };});
   $("sForza").oninput=function(){s.forza=this.value;save();};
   $("sMigl").oninput=function(){s.migl=this.value;save();};
@@ -290,10 +323,18 @@ function renderCard(){
     st.sess.studenti.splice(i,1);if(!st.sess.studenti.length)st.sess.studenti.push(nuovoStud());
     st.sess.cur=Math.min(i,st.sess.studenti.length-1);save();render();
   };
+  guida(s,false);
   $("sNext").onclick=function(){
     if(i<st.sess.studenti.length-1){st.sess.cur=i+1;save();render();window.scrollTo({top:0,behavior:"smooth"});}
     else mostraRegistro(true);
   };
+}
+function guida(s,scorri){
+  var prossima=null;
+  VOCI.forEach(function(v){var el=document.querySelector('.voce[data-v="'+v.k+'"]');if(!el)return;var ok=typeof s.p[v.k]==="number";el.classList.toggle("done",ok);el.classList.remove("next");if(!ok&&!prossima)prossima=el;});
+  var nx=$("sNext");
+  if(prossima){prossima.classList.add("next");nx.classList.remove("pronto");if(scorri){var r=prossima.getBoundingClientRect();if(r.top<70||r.bottom>window.innerHeight-90)window.scrollBy({top:r.top-110,behavior:"smooth"});}}
+  else{nx.classList.add("pronto");if(scorri){var r2=nx.getBoundingClientRect();if(r2.bottom>window.innerHeight-90)window.scrollBy({top:r2.bottom-window.innerHeight+120,behavior:"smooth"});}}
 }
 function corto(t){var m={"Non risponde":"non risp.","Frammentaria o con errori gravi":"frammentaria","Essenziale, qualche imprecisione":"essenziale","Completa e corretta":"completa","Completa, precisa, con esempi":"approfondita","Generico o scorretto":"generico","Semplice ma corretto":"semplice","Appropriato":"appropriato","Preciso e sicuro":"preciso","Ripete a memoria, non collega":"a memoria","Collega se guidato":"se guidato","Collega da solo, in modo semplice":"da solo","Collega e applica allo sport":"applica"};return m[t]||t;}
 function nomiNoti(){
@@ -305,7 +346,7 @@ function bar(){
   var i=st.sess.cur,s=st.sess.studenti[i],c=calc(s);
   $("bNome").textContent=nomeS(s,i);
   $("bInfo").textContent=c.n===0?"Tocca i punteggi":(c.completo?"Punti: "+fmt(c.tot)+"/10"+(c.tot<2?" → voto minimo 2":""):"Voci compilate "+c.n+"/5 · parziale "+fmt(c.tot));
-  var e=$("bVoto");e.textContent=c.voto==null?"–":fmt(c.voto);e.className="voto "+cls(c.voto);
+  var e=$("bVoto");e.textContent=c.voto==null?"–":fmt(c.voto);e.className="voto "+(c.voto!=null&&!c.completo?"parz":cls(c.voto));
 }
 
 /* --- registro --- */
@@ -373,6 +414,9 @@ $("bArchivia").onclick=function(){
   st.archivio.push(st.sess);st.sess=nuovaSessione();st.sess.classe=cl;st.sess.argomenti=arg;save();
   bindDati();render();mostraRegistro(false);toast("Salvata. Nuova interrogazione pronta");
 };
+function setLim(on){document.documentElement.classList.toggle("lim",on);$("bLim").classList.toggle("pri",on);try{localStorage.setItem("voti-lim",on?"1":"");}catch(e){}}
+try{setLim(localStorage.getItem("voti-lim")==="1");}catch(e){}
+$("bLim").onclick=function(){setLim(!document.documentElement.classList.contains("lim"));};
 $("bReg").onclick=function(){mostraRegistro($("vRegistro").style.display==="none");};
 $("bBack").onclick=function(){mostraRegistro(false);};
 
