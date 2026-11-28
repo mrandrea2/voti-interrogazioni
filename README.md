@@ -14,3 +14,7 @@ Sito statico: `index.html`, nessuna build.
 - Oppure un link `…/#classi=<base64>`: il frammento dopo # non arriva al server; gli elenchi vengono salvati solo nel browser.
 - «Scegli gli interrogati» mostra la classe (già interrogati con il voto); «Estrai a caso» riempie i posti liberi con chi non è ancora stato interrogato.
 - I nomi degli studenti NON sono nel codice (repository pubblico).
+
+## PDF e altri computer
+- Registro → «PDF di questa interrogazione» o «PDF di tutto l'archivio»: registro + schede individuali.
+- Il PDF contiene i dati in un commento interno (`%VOTIDATA:` base64 JSON): «Carica un PDF salvato» li reimporta su un altro computer, unendo per id senza doppioni (vince la versione più recente).
